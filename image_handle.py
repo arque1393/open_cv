@@ -1,8 +1,112 @@
+# In[0]:
 import cv2
-img1 = cv2.imread('./samples/data/lena.jpg', -1)
-
+import numpy as np
+# In[1]:
+# Deal with image
+img1 = cv2.imread('Resources/Faces/train/Ben Afflek/1.jpg', -1)
 cv2.imshow('image', img1)
 while True:
     k = cv2.waitKey(0)
     if k == 27:
-        print("K==27")
+        cv2.destroyAllWindows()
+        break
+
+# In[2]:
+# Capture video from file
+capture = cv2.VideoCapture("./Resources/Videos/dog.mp4")
+# This function can take device no to capture video directly from camera device
+try:
+    isTrue = True
+    while isTrue:
+        isTrue, frame = capture.read()
+        frame = rescaleFrame(frame, scale=.75)
+        cv2.imshow('Video', frame)
+        if cv2.waitKey(20) & 0xFF == ord('d'):
+            break
+except:
+    pass
+capture.release()
+cv2.destroyAllWindows()
+# In[3]:
+# Rescale Frame
+
+
+def rescaleFrame(frame, scale=.75):
+    height = frame.shape[0]
+    width = frame.shape[1]
+    return cv2.resize(frame, (width, height),
+                      interpolation=cv2.INTER_AREA)
+
+# %%
+
+
+# Read in an image
+img = cv2.imread('./Resources/Photos/park.jpg')
+cv2.imshow('Park', img)
+
+# Converting to grayscale
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+cv2.imshow('Gray', gray)
+
+# Blur
+blur = cv2.GaussianBlur(img, (7, 7), cv2.BORDER_DEFAULT)
+cv2.imshow('Blur', blur)
+
+# Edge Cascade
+canny = cv2.Canny(blur, 125, 175)
+cv2.imshow('Canny Edges', canny)
+
+# Dilating the image
+dilated = cv2.dilate(canny, (7, 7), iterations=3)
+cv2.imshow('Dilated', dilated)
+
+# Eroding
+eroded = cv2.erode(dilated, (7, 7), iterations=3)
+cv2.imshow('Eroded', eroded)
+
+# Resize
+resized = cv2.resize(img, (500, 500), interpolation=cv2.INTER_CUBIC)
+cv2.imshow('Resized', resized)
+
+# Cropping
+cropped = img[50:200, 200:400]
+cv2.imshow('Cropped', cropped)
+
+
+while cv2.waitKey(0) != ord('j'):
+    pass
+
+cv2.destroyAllWindows()
+
+# %%
+
+img = cv2.imread('./Resources/Photos/cats.jpg')
+cv2.imshow('Cats', img)
+
+blank = np.zeros(img.shape, dtype='uint8')
+cv2.imshow('Blank', blank)
+
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+cv2.imshow('Gray', gray)
+
+blur = cv2.GaussianBlur(gray, (5,5), cv2.BORDER_DEFAULT)
+cv2.imshow('Blur', blur)
+
+canny = cv2.Canny(blur, 125, 175)
+cv2.imshow('Canny Edges', canny)
+
+# ret, thresh = cv.threshold(gray, 125, 255, cv.THRESH_BINARY)
+# cv.imshow('Thresh', thresh)
+
+contours, hierarchies = cv2.findContours(canny, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+print(f'{len(contours)} contour(s) found!')
+
+cv2.drawContours(blank, contours, -1, (0,0,255), 1)
+cv2.imshow('Contours Drawn', blank)
+
+while cv2.waitKey(0) != ord('j'):
+    pass
+
+cv2.destroyAllWindows()
+
+j# %%
